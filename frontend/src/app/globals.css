@@ -10,14 +10,14 @@
   --color-accent2: #d77a61;
   --color-accent3: #6b8e7e;
   --color-accent4: #8b5e3c;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inria-sans);
+  --font-mono: var(--font-inria-sans);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inria-sans), Arial, Helvetica, sans-serif;
 }
 
 /* Custom scrollbar styling */

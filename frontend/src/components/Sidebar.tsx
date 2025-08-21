@@ -49,28 +49,30 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
 
         {/* Navigation Links - Only show when expanded */}
         {isExpanded && (
-          <div className="flex-1 px-2 flex flex-col justify-center items-start">
-            {navigationItems.map((item) => (
-              <div key={item.name} className="mb-2 w-full">
-                <div
-                  className={`
-                    flex items-center py-3 rounded-lg transition-colors duration-200
-                    ${activePage === item.name 
-                      ? 'text-text font-bold' 
-                      : 'text-text'
-                    }
-                  `}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <a
-                    href={item.href}
-                    className="ml-4 text-xl hover:underline cursor-pointer"
+          <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2">
+            <div className="flex flex-col items-start">
+              {navigationItems.map((item) => (
+                <div key={item.name} className="mb-2 w-full">
+                  <div
+                    className={`
+                      flex items-center py-3 rounded-lg transition-colors duration-200
+                      ${activePage === item.name 
+                        ? 'text-text font-bold' 
+                        : 'text-text'
+                      }
+                    `}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    {item.name}
-                  </a>
+                    <a
+                      href={item.href}
+                      className="ml-4 text-xl hover:underline cursor-pointer"
+                    >
+                      {item.name}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
