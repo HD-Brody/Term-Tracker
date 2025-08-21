@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SidebarProps {
   activePage?: string;
@@ -8,6 +8,7 @@ interface SidebarProps {
 
 export default function Sidebar({ activePage = 'Dashboard', children }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   const navigationItems = [
     { name: 'Dashboard', href: '/'},
@@ -19,6 +20,18 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
+
+  // Control text visibility with delay to match width transition
+  useEffect(() => {
+    if (isExpanded) {
+      // Show text after width transition starts
+      const timer = setTimeout(() => setShowText(true), 180);
+      return () => clearTimeout(timer);
+    } else {
+      // Hide text immediately when collapsing
+      setShowText(false);
+    }
+  }, [isExpanded]);
 
   return (
     <div className="flex h-screen">
@@ -33,7 +46,7 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
       >
         {/* Logo Section */}
         <div className="w-full p-4 flex items-center justify-center">
-          {isExpanded ? (
+          {showText ? (
             <div className="flex items-center space-x-2">
               <svg className="w-6 h-6 text-text" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -48,7 +61,7 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
         </div>
 
         {/* Navigation Links - Only show when expanded */}
-        {isExpanded && (
+        {showText && (
           <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2">
             <div className="flex flex-col items-start">
               {navigationItems.map((item) => (
