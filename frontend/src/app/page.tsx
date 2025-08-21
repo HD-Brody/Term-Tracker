@@ -1,6 +1,7 @@
 "use client";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+import Layout from "../components/Layout";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,7 +20,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-background min-h-screen p-20 w-3/4 mx-auto">
+    <Layout activePage="Dashboard">
       {/* Header */}
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-text text-3xl font-bold">Welcome, John Doe!</h1>
@@ -75,6 +76,6 @@ export default function Home() {
         </div>
 
       </section>
-    </div>
+    </Layout>
   );
 }
