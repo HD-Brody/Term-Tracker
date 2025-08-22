@@ -33,8 +33,8 @@ export default function Home() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-[30px] shadow-md p-6 mb-10">
-          <div className="flex justify-between items-center mb-6">
+        <section className="bg-box1 rounded-xl shadow-md px-6 py-4 mb-10">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button className="bg-accent2 text-box1 px-4 py-2 rounded-md">Add Course</button>
           </div>
@@ -73,10 +73,38 @@ export default function Home() {
                 <button className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm">Remove</button>
               </div>
             </div>
-
           </div>
-
         </section>
+
+        {/* Bottom Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Upcoming Deadlines */}
+          <section className="bg-box1 rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-bold mb-6">Upcoming deadlines</h2>
+            <div className="space-y-4">
+
+              <div className="bg-box2 rounded-xl shadow p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" className="w-4 h-4"/>
+                  <div>
+                    <p className="text-text">Research assignment - GGR196</p>
+                    <span className="text-sm opacity-50">in 3 days</span>
+                  </div>
+                </div>
+                <button className="text-md">Edit</button>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Calendar */}
+          <section className="bg-box1 rounded-xl shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+
+            </div>
+          </section>
+        </div>
+        
       </div>
     </Layout>
   );
