@@ -79,3 +79,10 @@ body {
 .scrollbar-vertical > * {
   direction: ltr;
 }
+
+.btn-hover-darken:hover {
+  filter: brightness(90%);
+}
+.btn-hover-darken {
+  color: inherit; /* text stays normal */
+}
