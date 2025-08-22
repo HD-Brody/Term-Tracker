@@ -28,7 +28,7 @@ export default function Home() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-md px-6 py-4 mb-10 h-auto">
+        <section className="bg-box1 rounded-xl shadow-md px-6 py-4 mb-10 h-70">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button className="bg-accent2 text-box1 px-4 py-2 rounded-md">Add Course</button>
@@ -36,7 +36,8 @@ export default function Home() {
 
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-custom">
             {/* Course Cards */}
-            <div className="bg-box2 rounded-xl shadow-md px-6 py-4 w-64 flex-shrink-0">
+
+            {/* <div className="bg-box2 rounded-xl shadow-md px-6 py-4 w-64 flex-shrink-0">
               <h3 className="text-text text-lg font-bold mb-4">Calculus 1</h3>
               <p className="text-text text-sm mt-2">Professor: Dr. Boris Khesin</p>
               <p className="text-text text-sm">Semester: Fall 2025</p>
@@ -45,8 +46,7 @@ export default function Home() {
                 <button className="text-sm underline">Edit</button>
                 <button className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm">Remove</button>
               </div>
-            </div>
-
+            </div> */}
 
           </div>
         </section>
@@ -58,7 +58,7 @@ export default function Home() {
             <h2 className="text-xl font-bold mb-6">Upcoming deadlines</h2>
             <div className="space-y-4 overflow-y-auto scrollbar-vertical flex-1">
 
-              <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
+              {/* <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <input type="checkbox" className="w-4 h-4"/>
                   <div>
@@ -100,7 +100,7 @@ export default function Home() {
                   </div>
                 </div>
                 <button className="text-md">Edit</button>
-              </div>
+              </div> */}
 
             </div>
           </section>
