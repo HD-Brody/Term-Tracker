@@ -1,12 +1,7 @@
 "use client";
-import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabase } from "../lib/supabase";
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
