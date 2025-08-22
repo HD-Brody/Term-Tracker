@@ -44,3 +44,38 @@ body {
 .scrollbar-custom::-webkit-scrollbar-button {
   display: none;
 }
+
+/* Vertical scrollbar styling */
+.scrollbar-vertical::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-vertical::-webkit-scrollbar-track {
+  background: var(--color-box2);
+  border-radius: 4px;
+}
+
+.scrollbar-vertical::-webkit-scrollbar-thumb {
+  background: var(--color-accent4);
+  border-radius: 4px;
+}
+
+.scrollbar-vertical::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent4);
+  opacity: 0.8;
+}
+
+/* Hide scrollbar arrows for vertical scrollbar */
+.scrollbar-vertical::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Move scrollbar to the left */
+.scrollbar-vertical {
+  direction: rtl;
+  padding-left: 12px;
+}
+
+.scrollbar-vertical > * {
+  direction: ltr;
+}
