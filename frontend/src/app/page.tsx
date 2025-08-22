@@ -35,7 +35,9 @@ export default function DashboardPage() {
       <div className="min-w-1/2">
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
-          <h1 className="text-text text-4xl font-bold">Welcome, John Doe!</h1>
+          <h1 className="text-text text-4xl font-bold">
+            Welcome, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}!
+          </h1>
           <div className="w-12 h-12 bg-accent3 rounded-full flex items-center justify-center">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A9.953 9.953 0 0112 15c2.21 0 4.254.72 5.879 1.929M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
