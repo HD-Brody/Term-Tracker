@@ -1,18 +1,34 @@
 "use client";
+import { useAuth } from "@/lib/authProvider";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 import Layout from "../components/Layout";
-import { supabase } from "../lib/supabase";
 
-export default function Home() {
+export default function DashboardPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
   const [tasks, setTasks] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const { data } = await supabase.from("tasks").select("*");
-      setTasks(data || []);
-    };
-    fetchTasks();
-  }, []);
+    if (!loading && !user) {
+      router.push("/auth"); // redirect to login
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchTasks = async () => {
+        const { data } = await supabase.from("tasks").select("*");
+        setTasks(data || []);
+      };
+      fetchTasks();
+    }
+  }, [user]);
+
+  if (loading) return <p>Loading...</p>;
+  if (!user) return null;
 
   return (
     <Layout activePage="Dashboard">

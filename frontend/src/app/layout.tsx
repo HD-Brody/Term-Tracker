@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inria_Sans } from "next/font/google";
+import { AuthProvider } from "@/lib/authProvider";
 import "./globals.css";
 
 const inriaSans = Inria_Sans({
@@ -20,10 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inriaSans.variable} antialiased`}
-      >
-        {children}
+      <body className={`${inriaSans.variable} antialiased`}>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
