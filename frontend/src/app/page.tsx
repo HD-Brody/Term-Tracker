@@ -107,7 +107,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-md px-6 py-4 mb-10 h-70">
+        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 h-70">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
@@ -135,7 +135,7 @@ export default function DashboardPage() {
             {courses.map((course, index) => (
               <div
                 key={index}
-                className="bg-box2 rounded-xl shadow-md px-6 py-4 w-80 flex-shrink-0"
+                className="bg-box2 rounded-xl shadow-lg px-6 py-4 w-80 flex-shrink-0"
               >
                 <h3 className="text-text text-lg font-bold mb-4">
                   {course.name}
@@ -177,7 +177,7 @@ export default function DashboardPage() {
         {/* Bottom Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Upcoming Deadlines */}
-          <section className="bg-box1 rounded-xl shadow-md p-6 h-80 flex flex-col">
+          <section className="bg-box1 rounded-xl shadow-lg p-6 h-80 flex flex-col">
             <h2 className="text-xl font-bold mb-6">Upcoming deadlines</h2>
             <div className="space-y-4 overflow-y-auto scrollbar-vertical flex-1">
               {/* <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
@@ -227,7 +227,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Calendar */}
-          <section className="bg-box1 rounded-xl shadow-md p-6">
+          <section className="bg-box1 rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-center mb-4"></div>
           </section>
         </div>

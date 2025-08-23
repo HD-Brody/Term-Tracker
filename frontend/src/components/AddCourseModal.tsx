@@ -54,66 +54,92 @@ export default function AddCourseModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-box2 rounded-2xl shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl text-text font-semibold mb-4">
-          {initialData ? "Edit Course" : "Add Course"}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm">
+      <div className="bg-box2 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-accent1/20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl text-text font-bold">
+            {initialData ? "Edit Course" : "Add Course"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-text/60 hover:text-text transition-colors duration-200 p-1"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium">Course Name *</label>
+            <label className="block text-sm font-semibold text-text mb-2">
+              Course Name *
+            </label>
             <input
               type="text"
-              className="mt-1 w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
+              placeholder="Enter course name"
               autoFocus
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Professor</label>
+            <label className="block text-sm font-semibold text-text mb-2">
+              Professor *
+            </label>
             <input
               type="text"
-              className="mt-1 w-full bg- rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
               value={professor}
               onChange={(e) => setProfessor(e.target.value)}
+              placeholder="Enter professor name"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Semester</label>
+            <label className="block text-sm font-semibold text-text mb-2">
+              Semester *
+            </label>
             <input
               type="text"
-              className="mt-1 w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
+              placeholder="e.g., Fall 2024"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Notes</label>
+            <label className="block text-sm font-semibold text-text mb-2">
+              Notes
+            </label>
             <textarea
-              className="mt-1 w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 resize-none"
+              rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any additional notes..."
             />
           </div>
 
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-accent2 text-white transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+              className="px-6 py-3 rounded-xl bg-accent1/60 text-text font-medium transition-all duration-200 cursor-pointer hover:bg-accent1/50 hover:shadow-md hover:scale-105 active:scale-95"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-accent3 text-white transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+              className="px-6 py-3 rounded-xl bg-accent2 text-white font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-md hover:scale-105 active:scale-95"
             >
-              {initialData ? "Save Changes" : "Save"}
+              {initialData ? "Save Changes" : "Add Course"}
             </button>
           </div>
         </form>
