@@ -1,22 +1,25 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook } from "@fortawesome/free-solid-svg-icons";
 
 interface SidebarProps {
   activePage?: string;
   children?: React.ReactNode;
 }
 
-export default function Sidebar({ activePage = 'Dashboard', children }: SidebarProps) {
+export default function Sidebar({
+  activePage = "Dashboard",
+  children,
+}: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showText, setShowText] = useState(false);
 
   const navigationItems = [
-    { name: 'Dashboard', href: '/'},
-    { name: 'Courses', href: '/courses'},
-    { name: 'Tasks', href: '/tasks'},
-    { name: 'Calendar', href: '/calendar'},
+    { name: "Dashboard", href: "/" },
+    { name: "Courses", href: "/courses" },
+    { name: "Tasks", href: "/tasks" },
+    { name: "Calendar", href: "/calendar" },
   ];
 
   const toggleSidebar = () => {
@@ -38,10 +41,10 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div 
+      <div
         className={`
           bg-accent1 shadow-lg transition-all duration-300 ease-in-out
-          ${isExpanded ? 'w-64' : 'w-16'}
+          ${isExpanded ? "w-64" : "w-16"}
           flex flex-col items-center relative
         `}
         onClick={toggleSidebar}
@@ -51,7 +54,9 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
           {showText ? (
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faBook} size="2x" className="text-text" />
-              <span className="text-text font-bold text-[25px]">TermTracker</span>
+              <span className="text-text font-bold text-[25px]">
+                TermTracker
+              </span>
             </div>
           ) : (
             <FontAwesomeIcon icon={faBook} size="2x" className="text-text" />
@@ -67,9 +72,10 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
                   <div
                     className={`
                       flex items-center py-3 rounded-lg transition-colors duration-200
-                      ${activePage === item.name 
-                        ? 'text-text font-bold' 
-                        : 'text-text'
+                      ${
+                        activePage === item.name
+                          ? "text-text font-bold"
+                          : "text-text"
                       }
                     `}
                     onClick={(e) => e.stopPropagation()}
@@ -88,25 +94,32 @@ export default function Sidebar({ activePage = 'Dashboard', children }: SidebarP
         )}
 
         {/* Toggle Button - Centered when closed, fixed distance from right when expanded */}
-        <div className={`
+        <div
+          className={`
           absolute top-1/2 transform -translate-y-1/2 transition-all duration-300
-          ${isExpanded ? 'right-4' : 'left-1/2 -translate-x-1/2'}
-        `}>
+          ${isExpanded ? "right-4" : "left-1/2 -translate-x-1/2"}
+        `}
+        >
           <button
             className="
               w-8 h-8 rounded-full
               flex items-center justify-center transition-all duration-200
             "
           >
-            <svg 
+            <svg
               className={`w-4 h-4 text-accent4 transition-transform duration-300 ${
-                isExpanded ? 'rotate-0' : 'rotate-180'
-              }`} 
-              fill="none" 
-              stroke="currentColor" 
+                isExpanded ? "rotate-0" : "rotate-180"
+              }`}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="5"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
         </div>

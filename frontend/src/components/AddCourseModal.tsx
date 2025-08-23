@@ -1,21 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface AddCourseModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (course: any) => void;
+  initialData?: any;
 }
 
-export default function AddCourseModal({ isOpen, onClose, onSave }: AddCourseModalProps) {
+export default function AddCourseModal({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+}: AddCourseModalProps) {
   const [courseName, setCourseName] = useState("");
   const [professor, setProfessor] = useState("");
   const [semester, setSemester] = useState("");
   const [notes, setNotes] = useState("");
 
+  useEffect(() => {
+    if (initialData) {
+      // If initialData exists, pre-fill the state
+      setCourseName(initialData.name || "");
+      setProfessor(initialData.professor || "");
+      setSemester(initialData.semester || "");
+      setNotes(initialData.notes || "");
+    } else {
+      // Otherwise, clear the state for a new course
+      setCourseName("");
+      setProfessor("");
+      setSemester("");
+      setNotes("");
+    }
+  }, [initialData]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseName.trim()) return; // Require course name
-    onSave({ courseName, professor, semester, notes });
+    if (!courseName.trim()) return;
+    onSave({
+      id: initialData?.id, // Include the ID if in edit mode
+      courseName,
+      professor,
+      semester,
+      notes,
+    });
     setCourseName("");
     setProfessor("");
     setSemester("");
@@ -28,7 +56,9 @@ export default function AddCourseModal({ isOpen, onClose, onSave }: AddCourseMod
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className="bg-box2 rounded-2xl shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl text-text font-semibold mb-4">Add Course</h2>
+        <h2 className="text-xl text-text font-semibold mb-4">
+          {initialData ? "Edit Course" : "Add Course"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium">Course Name *</label>
@@ -83,7 +113,7 @@ export default function AddCourseModal({ isOpen, onClose, onSave }: AddCourseMod
               type="submit"
               className="px-4 py-2 rounded-lg bg-accent3 text-white transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
             >
-              Save
+              {initialData ? "Save Changes" : "Save"}
             </button>
           </div>
         </form>

@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<any | null>(null); // New state for editing
 
   const handleAddCourse = (course: any) => {
     const newCourse = {
@@ -20,15 +21,41 @@ export default function DashboardPage() {
       name: course.courseName,
       professor: course.professor,
       semester: course.semester,
-      notes: course.notes
+      notes: course.notes,
     };
-  
+
     setCourses([...courses, newCourse]); // Later: Supabase insert
+  };
+
+  const handleEditCourse = (course: any) => {
+    const updatedCourses = courses.map((c) =>
+      c.id === course.id
+        ? {
+            ...c,
+            name: course.courseName,
+            professor: course.professor,
+            semester: course.semester,
+            notes: course.notes,
+          }
+        : c
+    );
+    setCourses(updatedCourses);
+    setEditingCourse(null);
   };
 
   const handleRemoveCourse = (courseId: number) => {
     setCourses(courses.filter((course) => course.id !== courseId));
     // Later: hook up Supabase delete
+  };
+
+  const handleOpenEditModal = (course: any) => {
+    setEditingCourse(course);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCourse(null);
   };
 
   useEffect(() => {
@@ -121,14 +148,19 @@ export default function DashboardPage() {
                   View Syllabus
                 </a>
                 <div className="flex justify-between mt-4">
-                  <button 
+                  <button
+                    onClick={() => handleOpenEditModal(course)}
                     className="text-sm transition-all duration-200 cursor-pointer hover:underline"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => {
-                      if (window.confirm("Are you sure you want to remove this course?")) {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to remove this course?"
+                        )
+                      ) {
                         handleRemoveCourse(course.id);
                       }
                     }}
@@ -215,8 +247,9 @@ export default function DashboardPage() {
       {/* Add Course Modal */}
       <AddCourseModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddCourse}
+        onClose={handleCloseModal} // Use the new close handler
+        onSave={editingCourse ? handleEditCourse : handleAddCourse} // Conditionally pass the save handler
+        initialData={editingCourse} // Pass the course data to the modal
       />
     </Layout>
   );
