@@ -33,6 +33,7 @@ export default function DashboardPage() {
     try {
       const newCourse = await addCourse(
         course.courseName,
+        course.courseCode,
         course.professor,
         course.semester,
         course.notes
@@ -55,6 +56,7 @@ export default function DashboardPage() {
     try {
       const updatedCourse = await updateCourse(course.id, {
         name: course.courseName,
+        course_code: course.courseCode,
         professor: course.professor,
         semester: course.semester,
         notes: course.notes,
@@ -171,9 +173,9 @@ export default function DashboardPage() {
                   <h3 className="text-text text-lg font-bold">
                     {course.name}
                   </h3>
-                  {course.courseCode && (
+                  {course.course_code && (
                     <span className="text-accent2 text-sm font-medium bg-accent2/10 px-2 py-1 rounded-md">
-                      {course.courseCode}
+                      {course.course_code}
                     </span>
                   )}
                 </div>

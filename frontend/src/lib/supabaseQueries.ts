@@ -3,13 +3,14 @@ import { supabase } from "./supabaseClient";
 // Course Queries
 export async function addCourse(
   name: string,
+  courseCode: string,
   professor?: string,
   semester?: string,
   notes?: string
 ) {
   const { data, error } = await supabase
     .from("courses")
-    .insert([{ name, professor, semester, notes }])
+    .insert([{ name, course_code: courseCode, professor, semester, notes }])
     .select();
 
   if (error) throw error;
@@ -30,6 +31,7 @@ export async function updateCourse(
   id: string,
   updates: {
     name?: string;
+    course_code?: string;
     professor?: string;
     semester?: string;
     notes?: string;

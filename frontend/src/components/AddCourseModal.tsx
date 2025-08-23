@@ -25,7 +25,7 @@ export default function AddCourseModal({
     if (initialData) {
       // If initialData exists, pre-fill the state
       setCourseName(initialData.name || "");
-      setCourseCode(initialData.courseCode || "");
+      setCourseCode(initialData.course_code || "");
       setProfessor(initialData.professor || "");
       setSemester(initialData.semester || "");
       setNotes(initialData.notes || "");
@@ -41,7 +41,7 @@ export default function AddCourseModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseName.trim()) return;
+    if (!courseName.trim() || !courseCode.trim()) return;
     onSave({
       id: initialData?.id, // Include the ID if in edit mode
       courseName,
@@ -91,19 +91,20 @@ export default function AddCourseModal({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-text mb-2">
-              Course Code
-            </label>
-            <input
-              type="text"
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              value={courseCode}
-              onChange={(e) => setCourseCode(e.target.value)}
-              placeholder="e.g., CSC110, MAT137"
-              disabled={isLoading}
-            />
-          </div>
+                     <div>
+             <label className="block text-sm font-semibold text-text mb-2">
+               Course Code *
+             </label>
+             <input
+               type="text"
+               className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+               value={courseCode}
+               onChange={(e) => setCourseCode(e.target.value)}
+               placeholder="e.g., CSC110, MAT137"
+               required
+               disabled={isLoading}
+             />
+           </div>
 
           <div>
             <label className="block text-sm font-semibold text-text mb-2">
