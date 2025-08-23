@@ -14,6 +14,7 @@ export default function AddCourseModal({
   initialData,
 }: AddCourseModalProps) {
   const [courseName, setCourseName] = useState("");
+  const [courseCode, setCourseCode] = useState("");
   const [professor, setProfessor] = useState("");
   const [semester, setSemester] = useState("");
   const [notes, setNotes] = useState("");
@@ -22,12 +23,14 @@ export default function AddCourseModal({
     if (initialData) {
       // If initialData exists, pre-fill the state
       setCourseName(initialData.name || "");
+      setCourseCode(initialData.courseCode || "");
       setProfessor(initialData.professor || "");
       setSemester(initialData.semester || "");
       setNotes(initialData.notes || "");
     } else {
       // Otherwise, clear the state for a new course
       setCourseName("");
+      setCourseCode("");
       setProfessor("");
       setSemester("");
       setNotes("");
@@ -40,11 +43,13 @@ export default function AddCourseModal({
     onSave({
       id: initialData?.id, // Include the ID if in edit mode
       courseName,
+      courseCode,
       professor,
       semester,
       notes,
     });
     setCourseName("");
+    setCourseCode("");
     setProfessor("");
     setSemester("");
     setNotes("");
@@ -83,6 +88,19 @@ export default function AddCourseModal({
               placeholder="Enter course name"
               autoFocus
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-text mb-2">
+              Course Code
+            </label>
+            <input
+              type="text"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
+              value={courseCode}
+              onChange={(e) => setCourseCode(e.target.value)}
+              placeholder="e.g., CSC110, MAT137"
             />
           </div>
 

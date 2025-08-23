@@ -19,6 +19,7 @@ export default function DashboardPage() {
     const newCourse = {
       id: Date.now(), // simple unique id for now
       name: course.courseName,
+      courseCode: course.courseCode,
       professor: course.professor,
       semester: course.semester,
       notes: course.notes,
@@ -33,6 +34,7 @@ export default function DashboardPage() {
         ? {
             ...c,
             name: course.courseName,
+            courseCode: course.courseCode,
             professor: course.professor,
             semester: course.semester,
             notes: course.notes,
@@ -107,7 +109,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 h-70">
+        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 h-auto">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
@@ -137,9 +139,16 @@ export default function DashboardPage() {
                 key={index}
                 className="bg-box2 rounded-xl shadow-lg px-6 py-4 w-80 flex-shrink-0"
               >
-                <h3 className="text-text text-lg font-bold mb-4">
-                  {course.name}
-                </h3>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-text text-lg font-bold">
+                    {course.name}
+                  </h3>
+                  {course.courseCode && (
+                    <span className="text-accent2 text-sm font-medium bg-accent2/10 px-2 py-1 rounded-md">
+                      {course.courseCode}
+                    </span>
+                  )}
+                </div>
                 <p className="text-text text-sm mt-2">
                   Professor: {course.professor}
                 </p>
