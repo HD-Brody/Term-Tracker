@@ -5,6 +5,7 @@ interface AddCourseModalProps {
   onClose: () => void;
   onSave: (course: any) => void;
   initialData?: any;
+  isLoading?: boolean;
 }
 
 export default function AddCourseModal({
@@ -12,6 +13,7 @@ export default function AddCourseModal({
   onClose,
   onSave,
   initialData,
+  isLoading = false,
 }: AddCourseModalProps) {
   const [courseName, setCourseName] = useState("");
   const [courseCode, setCourseCode] = useState("");
@@ -35,7 +37,7 @@ export default function AddCourseModal({
       setSemester("");
       setNotes("");
     }
-  }, [initialData]);
+  }, [initialData, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,11 +50,7 @@ export default function AddCourseModal({
       semester,
       notes,
     });
-    setCourseName("");
-    setCourseCode("");
-    setProfessor("");
-    setSemester("");
-    setNotes("");
+    // Don't clear the form here - let the parent component handle it
     onClose();
   };
 
@@ -67,7 +65,8 @@ export default function AddCourseModal({
           </h2>
           <button
             onClick={onClose}
-            className="text-text/60 hover:text-text transition-colors duration-200 p-1"
+            disabled={isLoading}
+            className="text-text/60 hover:text-text transition-colors duration-200 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -82,12 +81,13 @@ export default function AddCourseModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
               placeholder="Enter course name"
               autoFocus
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -97,10 +97,11 @@ export default function AddCourseModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               value={courseCode}
               onChange={(e) => setCourseCode(e.target.value)}
               placeholder="e.g., CSC110, MAT137"
+              disabled={isLoading}
             />
           </div>
 
@@ -110,11 +111,12 @@ export default function AddCourseModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               value={professor}
               onChange={(e) => setProfessor(e.target.value)}
               placeholder="Enter professor name"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -124,11 +126,12 @@ export default function AddCourseModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
               placeholder="e.g., Fall 2024"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -137,11 +140,12 @@ export default function AddCourseModal({
               Notes
             </label>
             <textarea
-              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 bg-box1 border-2 border-accent1/30 rounded-xl text-text placeholder-text/50 focus:outline-none focus:border-accent2 focus:ring-2 focus:ring-accent2/20 transition-all duration-200 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional notes..."
+              disabled={isLoading}
             />
           </div>
 
@@ -149,15 +153,17 @@ export default function AddCourseModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 rounded-xl bg-accent1/60 text-text font-medium transition-all duration-200 cursor-pointer hover:bg-accent1/50 hover:shadow-md hover:scale-105 active:scale-95"
+              disabled={isLoading}
+              className="px-6 py-3 rounded-xl bg-accent1/60 text-text font-medium transition-all duration-200 cursor-pointer hover:bg-accent1/50 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 rounded-xl bg-accent2 text-white font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-md hover:scale-105 active:scale-95"
+              disabled={isLoading}
+              className="px-6 py-3 rounded-xl bg-accent2 text-white font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {initialData ? "Save Changes" : "Add Course"}
+              {isLoading ? "Saving..." : (initialData ? "Save Changes" : "Add Course")}
             </button>
           </div>
         </form>

@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/authProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { addCourse, getCourses, updateCourse, deleteCourse } from "../lib/supabaseQueries";
 import Layout from "../components/Layout";
 import AddCourseModal from "../components/AddCourseModal";
 
@@ -13,41 +14,78 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<any | null>(null); // New state for editing
+  const [editingCourse, setEditingCourse] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAddCourse = (course: any) => {
-    const newCourse = {
-      id: Date.now(), // simple unique id for now
-      name: course.courseName,
-      courseCode: course.courseCode,
-      professor: course.professor,
-      semester: course.semester,
-      notes: course.notes,
-    };
-
-    setCourses([...courses, newCourse]); // Later: Supabase insert
+  // Fetch courses from Supabase
+  const fetchCourses = async () => {
+    try {
+      const data = await getCourses();
+      setCourses(data || []);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      alert("Failed to load courses. Please try again.");
+    }
   };
 
-  const handleEditCourse = (course: any) => {
-    const updatedCourses = courses.map((c) =>
-      c.id === course.id
-        ? {
-            ...c,
-            name: course.courseName,
-            courseCode: course.courseCode,
-            professor: course.professor,
-            semester: course.semester,
-            notes: course.notes,
-          }
-        : c
-    );
-    setCourses(updatedCourses);
-    setEditingCourse(null);
+  const handleAddCourse = async (course: any) => {
+    setIsLoading(true);
+    try {
+      const newCourse = await addCourse(
+        course.courseName,
+        course.professor,
+        course.semester,
+        course.notes
+      );
+      
+      if (newCourse && newCourse[0]) {
+        setCourses([...courses, newCourse[0]]);
+        handleCloseModal();
+      }
+    } catch (error) {
+      console.error("Error adding course:", error);
+      alert("Failed to add course. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRemoveCourse = (courseId: number) => {
-    setCourses(courses.filter((course) => course.id !== courseId));
-    // Later: hook up Supabase delete
+  const handleEditCourse = async (course: any) => {
+    setIsLoading(true);
+    try {
+      const updatedCourse = await updateCourse(course.id, {
+        name: course.courseName,
+        professor: course.professor,
+        semester: course.semester,
+        notes: course.notes,
+      });
+      
+      if (updatedCourse && updatedCourse[0]) {
+        const updatedCourses = courses.map((c) =>
+          c.id === course.id ? updatedCourse[0] : c
+        );
+        setCourses(updatedCourses);
+        handleCloseModal();
+      }
+    } catch (error) {
+      console.error("Error updating course:", error);
+      alert("Failed to update course. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveCourse = async (courseId: string) => {
+    setIsLoading(true);
+    try {
+      await deleteCourse(courseId);
+      setCourses(courses.filter((course) => course.id !== courseId));
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      alert("Failed to delete course. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOpenEditModal = (course: any) => {
@@ -73,6 +111,7 @@ export default function DashboardPage() {
         setTasks(data || []);
       };
       fetchTasks();
+      fetchCourses(); // Fetch courses when user is authenticated
     }
   }, [user]);
 
@@ -114,29 +153,18 @@ export default function DashboardPage() {
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-accent2 text-box1 px-4 py-2 rounded-md transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+              disabled={isLoading}
+              className="bg-accent2 text-box1 px-4 py-2 rounded-md transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Course
+              {isLoading ? "Loading..." : "Add Course"}
             </button>
           </div>
 
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-custom">
             {/* Course Cards */}
-
-            {/* <div className="bg-box2 rounded-xl shadow-md px-6 py-4 w-64 flex-shrink-0">
-              <h3 className="text-text text-lg font-bold mb-4">Calculus 1</h3>
-              <p className="text-text text-sm mt-2">Professor: Dr. Boris Khesin</p>
-              <p className="text-text text-sm">Semester: Fall 2025</p>
-              <a href="#" className="text-accent2 text-sm mt-2 block">View Syllabus</a>
-              <div className="flex justify-between mt-4">
-                <button className="text-sm underline">Edit</button>
-                <button className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm">Remove</button>
-              </div>
-            </div> */}
-
             {courses.map((course, index) => (
               <div
-                key={index}
+                key={course.id || index}
                 className="bg-box2 rounded-xl shadow-lg px-6 py-4 w-80 flex-shrink-0"
               >
                 <div className="flex justify-between items-start mb-4">
@@ -153,13 +181,19 @@ export default function DashboardPage() {
                   Professor: {course.professor}
                 </p>
                 <p className="text-text text-sm">Semester: {course.semester}</p>
+                {course.notes && (
+                  <p className="text-text text-sm mt-2 opacity-70">
+                    Notes: {course.notes}
+                  </p>
+                )}
                 <a href="#" className="text-accent2 text-sm mt-2 block w-fit">
                   View Syllabus
                 </a>
                 <div className="flex justify-between mt-4">
                   <button
                     onClick={() => handleOpenEditModal(course)}
-                    className="text-sm transition-all duration-200 cursor-pointer hover:underline"
+                    disabled={isLoading}
+                    className="text-sm transition-all duration-200 cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Edit
                   </button>
@@ -173,7 +207,8 @@ export default function DashboardPage() {
                         handleRemoveCourse(course.id);
                       }
                     }}
-                    className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+                    disabled={isLoading}
+                    className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Remove
                   </button>
@@ -256,9 +291,10 @@ export default function DashboardPage() {
       {/* Add Course Modal */}
       <AddCourseModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal} // Use the new close handler
-        onSave={editingCourse ? handleEditCourse : handleAddCourse} // Conditionally pass the save handler
-        initialData={editingCourse} // Pass the course data to the modal
+        onClose={handleCloseModal}
+        onSave={editingCourse ? handleEditCourse : handleAddCourse}
+        initialData={editingCourse}
+        isLoading={isLoading}
       />
     </Layout>
   );
