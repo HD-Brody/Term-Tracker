@@ -15,14 +15,20 @@ export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddCourse = (course: any) => {
-    // Transform the course object to match the expected structure
     const newCourse = {
+      id: Date.now(), // simple unique id for now
       name: course.courseName,
       professor: course.professor,
       semester: course.semester,
       notes: course.notes
     };
-    setCourses([...courses, newCourse]); // Later: hook up Supabase insert
+  
+    setCourses([...courses, newCourse]); // Later: Supabase insert
+  };
+
+  const handleRemoveCourse = (courseId: number) => {
+    setCourses(courses.filter((course) => course.id !== courseId));
+    // Later: hook up Supabase delete
   };
 
   useEffect(() => {
@@ -111,12 +117,23 @@ export default function DashboardPage() {
                   Professor: {course.professor}
                 </p>
                 <p className="text-text text-sm">Semester: {course.semester}</p>
-                <a href="#" className="text-accent2 text-sm mt-2 block">
+                <a href="#" className="text-accent2 text-sm mt-2 block w-fit">
                   View Syllabus
                 </a>
                 <div className="flex justify-between mt-4">
-                  <button className="text-sm transition-all duration-200 cursor-pointer hover:underline">Edit</button>
-                  <button className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95">
+                  <button 
+                    className="text-sm transition-all duration-200 cursor-pointer hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to remove this course?")) {
+                        handleRemoveCourse(course.id);
+                      }
+                    }}
+                    className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+                  >
                     Remove
                   </button>
                 </div>
