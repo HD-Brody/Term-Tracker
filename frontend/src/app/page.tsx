@@ -165,7 +165,13 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-6 flex-1">
+          <div
+            className={
+              courses.length > 0
+                ? "grid grid-cols-4 gap-6 flex-1"
+                : "flex items-center justify-center w-full h-full"
+            }
+          >
             {/* Course Cards */}
             {courses.length > 0 ? (
               courses.map((course, index) => (
@@ -226,11 +232,9 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="flex items-center justify-center w-full h-full">
-                <div className="text-center">
-                  <p className="text-text/60 text-lg mb-2">No courses yet</p>
-                  <p className="text-text/40 text-sm">Add your first course to get started!</p>
-                </div>
+              <div className="text-center">
+                <p className="text-text/60 text-lg mb-2">No courses yet</p>
+                <p className="text-text/40 text-sm">Add your first course to get started!</p>
               </div>
             )}
           </div>
