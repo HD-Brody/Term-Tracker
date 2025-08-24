@@ -169,7 +169,7 @@ export default function DashboardPage() {
             className={
               courses.length > 0
                 ? "grid grid-cols-4 gap-6 flex-1"
-                : "flex items-center justify-center w-full h-full"
+                : "flex items-center justify-center w-full h-48"
             }
           >
             {/* Course Cards */}
