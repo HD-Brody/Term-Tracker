@@ -122,7 +122,7 @@ export default function DashboardPage() {
 
   return (
     <Layout activePage="Dashboard">
-      <div className="w-full min-h-full flex flex-col">
+      <div className="w-full flex flex-col"> {/* Updated class to remove min-h-full */}
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-text text-3xl lg:text-4xl font-bold">
@@ -234,13 +234,12 @@ export default function DashboardPage() {
         </section>
 
         {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-80 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"> {/* Updated class to add mb-8 */}
           {/* Upcoming Deadlines */}
-          <section className="bg-box1 rounded-xl shadow-lg p-6 flex flex-col">
+          <section className="bg-box1 rounded-xl shadow-lg p-6 flex flex-col flex-1">
             <h2 className="text-xl font-bold mb-6 text-text">Upcoming Deadlines</h2>
             <div className="space-y-4 overflow-y-auto scrollbar-vertical flex-1">
-
-              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
+            <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
                   <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
@@ -262,17 +261,6 @@ export default function DashboardPage() {
                 <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
               </div>
 
-              {/* <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
-                <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
-                  <div>
-                    <p className="text-text font-medium">Research assignment - GGR196</p>
-                    <span className="text-sm text-text/60">in 3 days</span>
-                  </div>
-                </div>
-                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
-              </div>
-
               <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
                   <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
@@ -282,13 +270,13 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
-              </div> */}
+              </div>
 
             </div>
           </section>
 
           {/* Calendar */}
-          <section className="bg-box1 rounded-xl shadow-lg p-6">
+          <section className="bg-box1 rounded-xl shadow-lg p-6 flex-1">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-text">Calendar</h2>
             </div>
