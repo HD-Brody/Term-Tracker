@@ -122,17 +122,17 @@ export default function DashboardPage() {
 
   return (
     <Layout activePage="Dashboard">
-      <div className="min-w-1/2">
+      <div className="w-full min-h-full flex flex-col">
         {/* Header */}
         <header className="flex justify-between items-center mb-6">
-          <h1 className="text-text text-4xl font-bold">
+          <h1 className="text-text text-3xl lg:text-4xl font-bold">
             Welcome,{" "}
             {user?.user_metadata?.full_name ||
               user?.email?.split("@")[0] ||
               "User"}
             !
           </h1>
-          <div className="w-12 h-12 bg-accent3 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-accent3 rounded-full flex items-center justify-center shadow-lg">
             <svg
               className="w-6 h-6 text-white"
               fill="none"
@@ -150,131 +150,148 @@ export default function DashboardPage() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 min-h-70">
-          <div className="flex justify-between items-center mb-2">
+        <section className="bg-box1 rounded-xl shadow-lg px-6 py-6 mb-6 flex-1 min-h-[300px] flex flex-col">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
               onClick={() => setIsModalOpen(true)}
               disabled={isLoading}
-              className="bg-accent2 text-box1 px-4 py-2 rounded-md transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-accent2 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isLoading ? "Loading..." : "Add Course"}
             </button>
           </div>
 
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-custom">
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-custom flex-1">
             {/* Course Cards */}
-            {courses.map((course, index) => (
-              <div
-                key={course.id || index}
-                className="bg-box2 rounded-xl shadow-lg px-6 py-4 w-80 flex-shrink-0"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-text text-lg font-bold">
-                    {course.name}
-                  </h3>
-                  {course.course_code && (
-                    <span className="text-accent2 text-sm font-medium bg-accent2/10 px-2 py-1 rounded-md">
-                      {course.course_code}
-                    </span>
-                  )}
+            {courses.length > 0 ? (
+              courses.map((course, index) => (
+                <div
+                  key={course.id || index}
+                  className="bg-box2 rounded-xl shadow-lg px-6 py-6 w-80 flex-shrink-0 border border-accent1/10"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-text text-lg font-bold">
+                      {course.name}
+                    </h3>
+                    {course.course_code && (
+                      <span className="text-accent2 text-sm font-medium bg-accent2/10 px-3 py-1 rounded-lg">
+                        {course.course_code}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <p className="text-text text-sm">
+                      <span className="font-medium">Professor:</span> {course.professor}
+                    </p>
+                    <p className="text-text text-sm">
+                      <span className="font-medium">Semester:</span> {course.semester}
+                    </p>
+                    {course.notes && (
+                      <p className="text-text text-sm opacity-70">
+                        <span className="font-medium">Notes:</span> {course.notes}
+                      </p>
+                    )}
+                  </div>
+                  <a href="#" className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200 block w-fit mb-4">
+                    View Syllabus
+                  </a>
+                  <div className="flex justify-between items-center">
+                    <button
+                      onClick={() => handleOpenEditModal(course)}
+                      disabled={isLoading}
+                      className="text-accent4 text-sm font-medium transition-all duration-200 cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you sure you want to remove this course?"
+                          )
+                        ) {
+                          handleRemoveCourse(course.id);
+                        }
+                      }}
+                      disabled={isLoading}
+                      className="text-white bg-accent2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-                <p className="text-text text-sm mt-2">
-                  Professor: {course.professor}
-                </p>
-                <p className="text-text text-sm">Semester: {course.semester}</p>
-                {course.notes && (
-                  <p className="text-text text-sm mt-2 opacity-70">
-                    Notes: {course.notes}
-                  </p>
-                )}
-                <a href="#" className="text-accent2 text-sm mt-2 block w-fit">
-                  View Syllabus
-                </a>
-                <div className="flex justify-between mt-4">
-                  <button
-                    onClick={() => handleOpenEditModal(course)}
-                    disabled={isLoading}
-                    className="text-sm transition-all duration-200 cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Are you sure you want to remove this course?"
-                        )
-                      ) {
-                        handleRemoveCourse(course.id);
-                      }
-                    }}
-                    disabled={isLoading}
-                    className="text-box1 bg-accent2 px-3 py-1 rounded-lg text-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Remove
-                  </button>
+              ))
+            ) : (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="text-center">
+                  <p className="text-text/60 text-lg mb-2">No courses yet</p>
+                  <p className="text-text/40 text-sm">Add your first course to get started!</p>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </section>
 
         {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-80 mb-8">
           {/* Upcoming Deadlines */}
-          <section className="bg-box1 rounded-xl shadow-lg p-6 h-80 flex flex-col">
-            <h2 className="text-xl font-bold mb-6">Upcoming deadlines</h2>
+          <section className="bg-box1 rounded-xl shadow-lg p-6 flex flex-col">
+            <h2 className="text-xl font-bold mb-6 text-text">Upcoming Deadlines</h2>
             <div className="space-y-4 overflow-y-auto scrollbar-vertical flex-1">
-              {/* <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
+
+              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4"/>
+                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
-                    <p className="text-text">Research assignment - GGR196</p>
-                    <span className="text-sm opacity-50">in 3 days</span>
+                    <p className="text-text font-medium">Research assignment - GGR196</p>
+                    <span className="text-sm text-text/60">in 3 days</span>
                   </div>
                 </div>
-                <button className="text-md">Edit</button>
+                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
               </div>
 
-              <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
+              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4"/>
+                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
-                    <p className="text-text">Research assignment - GGR196</p>
-                    <span className="text-sm opacity-50">in 3 days</span>
+                    <p className="text-text font-medium">Research assignment - GGR196</p>
+                    <span className="text-sm text-text/60">in 3 days</span>
                   </div>
                 </div>
-                <button className="text-md">Edit</button>
+                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
               </div>
 
-              <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
+              {/* <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4"/>
+                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
-                    <p className="text-text">Research assignment - GGR196</p>
-                    <span className="text-sm opacity-50">in 3 days</span>
+                    <p className="text-text font-medium">Research assignment - GGR196</p>
+                    <span className="text-sm text-text/60">in 3 days</span>
                   </div>
                 </div>
-                <button className="text-md">Edit</button>
+                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
               </div>
 
-              <div className="bg-box2 rounded-xl shadow px-4 py-2 flex items-center justify-between">
+              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4"/>
+                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
-                    <p className="text-text">Research assignment - GGR196</p>
-                    <span className="text-sm opacity-50">in 3 days</span>
+                    <p className="text-text font-medium">Research assignment - GGR196</p>
+                    <span className="text-sm text-text/60">in 3 days</span>
                   </div>
                 </div>
-                <button className="text-md">Edit</button>
+                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
               </div> */}
+
             </div>
           </section>
 
           {/* Calendar */}
           <section className="bg-box1 rounded-xl shadow-lg p-6">
-            <div className="flex justify-between items-center mb-4"></div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-text">Calendar</h2>
+            </div>
           </section>
         </div>
 
@@ -284,7 +301,7 @@ export default function DashboardPage() {
             await supabase.auth.signOut();
             router.push("/auth");
           }}
-          className="fixed bottom-6 right-6 bg-accent2 text-white px-4 py-2 rounded-md hover:bg-red-700 shadow-lg z-50 transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+          className="fixed bottom-6 right-6 bg-accent2 text-white px-6 py-3 rounded-xl font-medium shadow-lg z-50 transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
         >
           Log Out
         </button>
