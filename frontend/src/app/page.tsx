@@ -150,27 +150,30 @@ export default function DashboardPage() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-lg px-6 py-6 mb-6 flex-1 min-h-[300px] flex flex-col">
-          <div className="flex justify-between items-center mb-6">
+        <section className="bg-box1 rounded-xl shadow-lg px-6 pt-4 pb-6 mb-6 flex-1 min-h-[250px] flex flex-col">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
               onClick={() => setIsModalOpen(true)}
               disabled={isLoading}
-              className="bg-accent2 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="bg-accent2 text-white pl-3 pr-4 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent2/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
               {isLoading ? "Loading..." : "Add Course"}
             </button>
           </div>
 
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-custom flex-1">
+          <div className="grid grid-cols-4 gap-6 flex-1">
             {/* Course Cards */}
             {courses.length > 0 ? (
               courses.map((course, index) => (
                 <div
                   key={course.id || index}
-                  className="bg-box2 rounded-xl shadow-lg px-6 py-6 w-80 flex-shrink-0 border border-accent1/10"
+                  className="bg-box2 rounded-xl shadow-lg px-6 py-4 border border-accent1/10"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-2">
                     <h3 className="text-text text-lg font-bold">
                       {course.name}
                     </h3>
@@ -180,7 +183,7 @@ export default function DashboardPage() {
                       </span>
                     )}
                   </div>
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-2 mb-3">
                     <p className="text-text text-sm">
                       <span className="font-medium">Professor:</span> {course.professor}
                     </p>
@@ -193,14 +196,14 @@ export default function DashboardPage() {
                       </p>
                     )}
                   </div>
-                  <a href="#" className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200 block w-fit mb-4">
+                  <a href="#" className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200 block w-fit mb-2">
                     View Syllabus
                   </a>
                   <div className="flex justify-between items-center">
                     <button
                       onClick={() => handleOpenEditModal(course)}
                       disabled={isLoading}
-                      className="text-accent4 text-sm font-medium transition-all duration-200 cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-accent2 text-sm font-medium transition-all duration-200 cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Edit
                     </button>
@@ -234,12 +237,13 @@ export default function DashboardPage() {
         </section>
 
         {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"> {/* Updated class to add mb-8 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"> {/* Updated class to add mb-8 */}
           {/* Upcoming Deadlines */}
           <section className="bg-box1 rounded-xl shadow-lg p-6 flex flex-col flex-1">
-            <h2 className="text-xl font-bold mb-6 text-text">Upcoming Deadlines</h2>
-            <div className="space-y-4 overflow-y-auto scrollbar-vertical flex-1">
-            <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
+            <h2 className="text-xl font-bold mb-4 text-text">Upcoming Deadlines</h2>
+            <div className="space-y-4 flex-1">
+
+              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
                 <div className="flex items-center gap-4">
                   <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
                   <div>
