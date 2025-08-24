@@ -79,12 +79,18 @@ export default function Sidebar({
                     `}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <a
-                      href={item.href}
-                      className="ml-4 text-[25px] hover:underline cursor-pointer"
-                    >
-                      {item.name}
-                    </a>
+                    {item.name === "Courses" ? (
+                      <span className="ml-4 text-[25px] cursor-default">
+                        {item.name}
+                      </span>
+                    ) : (
+                      <a
+                        href={item.href}
+                        className="ml-4 text-[25px] hover:underline cursor-pointer"
+                      >
+                        {item.name}
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

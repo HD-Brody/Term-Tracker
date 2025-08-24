@@ -181,7 +181,12 @@ export default function DashboardPage() {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-text text-lg font-bold">
-                      {course.name}
+                      <a 
+                        href={`/courses?id=${course.id}&name=${encodeURIComponent(course.name)}`}
+                        className="hover:text-accent2 transition-colors duration-200 cursor-pointer"
+                      >
+                        {course.name}
+                      </a>
                     </h3>
                     {course.course_code && (
                       <span className="text-accent2 text-sm font-medium bg-accent2/10 px-3 py-1 rounded-lg">
