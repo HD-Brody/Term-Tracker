@@ -18,7 +18,6 @@ export default function Sidebar({
   const navigationItems = [
     { name: "Dashboard", href: "/" },
     { name: "Courses", href: "/courses" },
-    { name: "Tasks", href: "/tasks" },
     { name: "Calendar", href: "/calendar" },
   ];
 
