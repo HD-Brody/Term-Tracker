@@ -284,7 +284,7 @@ export default function DashboardPage() {
             await supabase.auth.signOut();
             router.push("/auth");
           }}
-          className="fixed bottom-6 right-6 bg-accent4 text-white px-4 py-2 rounded-md hover:bg-red-700 shadow-lg z-50 transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
+          className="fixed bottom-6 right-6 bg-accent2 text-white px-4 py-2 rounded-md hover:bg-red-700 shadow-lg z-50 transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 active:scale-95"
         >
           Log Out
         </button>

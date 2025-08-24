@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface SidebarProps {
   activePage?: string;
@@ -53,13 +53,13 @@ export default function Sidebar({
         <div className="w-full p-4 flex items-center justify-center">
           {showText ? (
             <div className="flex items-center space-x-2">
-              <FontAwesomeIcon icon={faBook} size="2x" className="text-text" />
+              <FontAwesomeIcon icon={faListCheck} size="2x" className="text-text" />
               <span className="text-text font-bold text-[25px]">
                 TermTracker
               </span>
             </div>
           ) : (
-            <FontAwesomeIcon icon={faBook} size="2x" className="text-text" />
+            <FontAwesomeIcon icon={faListCheck} size="2x" className="text-text" />
           )}
         </div>
 
