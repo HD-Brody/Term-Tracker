@@ -98,13 +98,18 @@ export default function AuthForm() {
               </div>
             )}
             
-            <form className="space-y-6">
+            <form 
+              className="space-y-6"
+              onSubmit={isSignUp ? handleSignup : handleLogin}
+            >
               <div>
                 <label className="block text-sm font-semibold text-text mb-2">
                   Email
                 </label>
                 <input
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -120,6 +125,8 @@ export default function AuthForm() {
                 </label>
                 <input
                   type="password"
+                  name="password"
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -129,23 +136,13 @@ export default function AuthForm() {
                 />
               </div>
 
-              {isSignUp ? (
-                <button
-                  onClick={handleSignup}
-                  disabled={loading}
-                  className="w-full bg-accent3 text-white py-3 px-6 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent3/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  {loading ? "Signing up..." : "Sign Up"}
-                </button>
-              ) : (
-                <button
-                  onClick={handleLogin}
-                  disabled={loading}
-                  className="w-full bg-accent3 text-white py-3 px-6 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent3/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  {loading ? "Logging in..." : "Log In"}
-                </button>
-              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent3 text-white py-3 px-6 rounded-xl font-medium transition-all duration-200 cursor-pointer hover:bg-accent3/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                {loading ? (isSignUp ? "Signing up..." : "Logging in...") : (isSignUp ? "Sign Up" : "Log In")}
+              </button>
             </form>
             
             <div className="mt-6 text-center">

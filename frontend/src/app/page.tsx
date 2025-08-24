@@ -150,7 +150,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Courses */}
-        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 h-auto">
+        <section className="bg-box1 rounded-xl shadow-lg px-6 py-4 mb-10 min-h-70">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-text text-xl font-bold">Courses</h2>
             <button
