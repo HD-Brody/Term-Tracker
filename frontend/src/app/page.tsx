@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/authProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { addCourse, getCourses, updateCourse, deleteCourse } from "../lib/supabaseQueries";
+import { addCourse, getCourses, updateCourse, deleteCourse, getTasks, updateTask, deleteTask } from "../lib/supabaseQueries";
 import Layout from "../components/Layout";
 import AddCourseModal from "../components/AddCourseModal";
 
@@ -25,6 +25,65 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching courses:", error);
       alert("Failed to load courses. Please try again.");
+    }
+  };
+
+  // Fetch tasks with course information
+  const fetchTasks = async () => {
+    try {
+      const data = await getTasks();
+      setTasks(data || []);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  // Get top 3 upcoming deadlines from all courses
+  const getUpcomingDeadlines = () => {
+    if (!tasks || tasks.length === 0) return [];
+    
+    // Filter out completed tasks and sort by due date
+    const activeTasks = tasks
+      .filter((task: any) => !task.completed && task.due_date)
+      .sort((a: any, b: any) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime());
+    
+    // Return top 3
+    return activeTasks.slice(0, 3);
+  };
+
+  // Get course code for a task
+  const getCourseCode = (task: any) => {
+    if (task.courses && task.courses.name) {
+      // Find the course to get its code
+      const course = courses.find(c => c.id === task.course_id);
+      return course?.course_code || '';
+    }
+    return '';
+  };
+
+  // Get course name for a task
+  const getCourseName = (task: any) => {
+    if (task.courses && task.courses.name) {
+      return task.courses.name;
+    }
+    return '';
+  };
+
+  // Format due date for display
+  const formatDueDate = (dueDate: string) => {
+    const due = new Date(dueDate);
+    const now = new Date();
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) {
+      return `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`;
+    } else if (diffDays === 0) {
+      return 'Due today';
+    } else if (diffDays === 1) {
+      return 'Due tomorrow';
+    } else {
+      return `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
     }
   };
 
@@ -100,6 +159,44 @@ export default function DashboardPage() {
     setEditingCourse(null);
   };
 
+  // Handle task completion toggle
+  const handleToggleTaskCompletion = async (taskId: string, currentCompleted: boolean) => {
+    setIsLoading(true);
+    try {
+      await updateTask(taskId, { completed: !currentCompleted });
+      // Refresh tasks after updating
+      await fetchTasks();
+    } catch (error) {
+      console.error("Error updating task completion:", error);
+      alert("Failed to update task completion. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle opening edit task modal
+  const handleOpenEditTaskModal = (task: any) => {
+    // For now, just show an alert since we don't have the edit modal in dashboard
+    alert(`Edit task: ${task.title}\nThis would open an edit modal in a future update.`);
+  };
+
+  // Handle removing a task
+  const handleRemoveTask = async (taskId: string) => {
+    if (window.confirm("Are you sure you want to remove this task?")) {
+      setIsLoading(true);
+      try {
+        await deleteTask(taskId);
+        // Refresh tasks after deletion
+        await fetchTasks();
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        alert("Failed to delete task. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/auth"); // redirect to login
@@ -108,10 +205,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) {
-      const fetchTasks = async () => {
-        const { data } = await supabase.from("tasks").select("*");
-        setTasks(data || []);
-      };
       fetchTasks();
       fetchCourses(); // Fetch courses when user is authenticated
     }
@@ -251,40 +344,70 @@ export default function DashboardPage() {
           <section className="bg-box1 rounded-xl shadow-lg p-6 flex flex-col flex-1">
             <h2 className="text-xl font-bold mb-4 text-text">Upcoming Deadlines</h2>
             <div className="space-y-4 flex-1">
-
-              {/* <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
-                <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
-                  <div>
-                    <p className="text-text font-medium">Research assignment - GGR196</p>
-                    <span className="text-sm text-text/60">in 3 days</span>
+              {getUpcomingDeadlines().length > 0 ? (
+                getUpcomingDeadlines().map((task) => (
+                  <div key={task.id} className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => handleToggleTaskCompletion(task.id, task.completed)}
+                        disabled={isLoading}
+                        className={`w-4 h-4 border-2 rounded flex-shrink-0 transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed ${
+                          task.completed 
+                            ? 'bg-accent3 border-accent3 text-white' 
+                            : 'border-accent3 hover:bg-accent3/20'
+                        }`}
+                      >
+                        {task.completed && (
+                          <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                      <div>
+                        <p className="text-text font-medium">
+                          {task.title} - {getCourseCode(task)}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="px-2 py-1 bg-accent1/20 text-accent4 rounded-full text-xs font-medium border border-accent1/30">
+                            {task.tag}
+                          </span>
+                          <span className="text-sm text-text/60">{formatDueDate(task.due_date)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => handleOpenEditTaskModal(task)}
+                        disabled={isLoading}
+                        className="p-1.5 text-text/60 hover:text-text hover:bg-box1 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button 
+                        onClick={() => handleRemoveTask(task.id)}
+                        disabled={isLoading}
+                        className="p-1.5 text-accent2 hover:bg-accent2/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
-              </div>
-
-              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
-                <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
-                  <div>
-                    <p className="text-text font-medium">Research assignment - GGR196</p>
-                    <span className="text-sm text-text/60">in 3 days</span>
+                ))
+              ) : (
+                <div className="bg-box2 rounded-xl shadow-md p-12 flex flex-col items-center justify-center text-center">
+                  <div className="w-16 h-16 bg-accent3/20 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-accent3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
                   </div>
+                  <h3 className="text-text text-xl font-medium mb-2">No upcoming deadlines</h3>
+                  <p className="text-text/60">All caught up! Add some tasks to see them here.</p>
                 </div>
-                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
-              </div>
-
-              <div className="bg-box2 rounded-xl shadow px-4 py-3 flex items-center justify-between border border-accent1/10">
-                <div className="flex items-center gap-4">
-                  <input type="checkbox" className="w-4 h-4 text-accent2 rounded focus:ring-accent2/20"/>
-                  <div>
-                    <p className="text-text font-medium">Research assignment - GGR196</p>
-                    <span className="text-sm text-text/60">in 3 days</span>
-                  </div>
-                </div>
-                <button className="text-accent2 text-sm font-medium hover:underline transition-colors duration-200">Edit</button>
-              </div> */}
-
+              )}
             </div>
           </section>
 
