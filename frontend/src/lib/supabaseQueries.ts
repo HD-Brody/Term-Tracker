@@ -54,11 +54,11 @@ export async function deleteCourse(id: string) {
 }
 
 // Task Queries
-export async function addTask(courseId: string, title: string, dueDate?: string) {
+export async function addTask(courseId: string, title: string, tag: string, dueDate?: string) {
   const { data, error } = await supabase
     .from("tasks")
     .insert([
-      { course_id: courseId, title, due_date: dueDate }
+      { course_id: courseId, title, tag, due_date: dueDate }
     ])
     .select();
 
