@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
+import { getCourses } from "../lib/supabaseQueries";
 
 interface SidebarProps {
   activePage?: string;
@@ -14,6 +15,8 @@ export default function Sidebar({
 }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [showCoursesDropdown, setShowCoursesDropdown] = useState(false);
+  const [courses, setCourses] = useState<any[]>([]);
 
   const navigationItems = [
     { name: "Dashboard", href: "/" },
@@ -21,8 +24,29 @@ export default function Sidebar({
     { name: "Calendar", href: "/calendar" },
   ];
 
+  // Fetch courses for the dropdown
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await getCourses();
+        setCourses(data || []);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    
+    if (isExpanded) {
+      fetchCourses();
+    }
+  }, [isExpanded]);
+
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const toggleCoursesDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowCoursesDropdown(!showCoursesDropdown);
   };
 
   // Control text visibility with delay to match width transition
@@ -34,6 +58,7 @@ export default function Sidebar({
     } else {
       // Hide text immediately when collapsing
       setShowText(false);
+      setShowCoursesDropdown(false);
     }
   }, [isExpanded]);
 
@@ -67,31 +92,65 @@ export default function Sidebar({
           <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2">
             <div className="flex flex-col items-start">
               {navigationItems.map((item) => (
-                <div key={item.name} className="mb-2 w-full">
-                  <div
-                    className={`
-                      flex items-center py-3 rounded-lg transition-colors duration-200
-                      ${
-                        activePage === item.name
-                          ? "text-text font-bold"
-                          : "text-text"
-                      }
-                    `}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {item.name === "Courses" ? (
-                      <span className="ml-4 text-[25px] cursor-default">
-                        {item.name}
-                      </span>
-                    ) : (
-                      <a
-                        href={item.href}
-                        className="ml-4 text-[25px] hover:underline cursor-pointer"
+                <div key={item.name} className="mb-6 w-full relative">
+                  {item.name === "Courses" ? (
+                    <div
+                      className="ml-4 text-[25px] cursor-pointer hover:text-accent4 transition-colors duration-200 relative"
+                      onClick={toggleCoursesDropdown}
+                    >
+                      {item.name}
+                      {/* Dropdown arrow */}
+                      <svg
+                        className={`inline-block ml-2 w-4 h-4 transition-transform duration-200 ${
+                          showCoursesDropdown ? 'rotate-180' : 'rotate-0'
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        {item.name}
-                      </a>
-                    )}
-                  </div>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                      
+                      {/* Courses Dropdown */}
+                      {showCoursesDropdown && (
+                        <div 
+                          className="absolute left-0 top-full mt-2 w-56 bg-box1 rounded-lg shadow-xl border border-accent1/20 z-50"
+                        >
+                          <div className="p-3">
+                            <div className="text-sm font-medium text-text/60 mb-2 px-2">Your Courses</div>
+                            {courses.length > 0 ? (
+                              <div className="space-y-1">
+                                {courses.map((course) => (
+                                  <a
+                                    key={course.id}
+                                    href={`/courses?id=${course.id}&name=${encodeURIComponent(course.name)}&code=${encodeURIComponent(course.course_code || '')}&professor=${encodeURIComponent(course.professor || '')}&semester=${encodeURIComponent(course.semester || '')}`}
+                                    className="block px-3 py-2 text-sm text-text hover:bg-accent1/20 rounded-md transition-colors duration-200"
+                                  >
+                                    <div className="font-medium">{course.name}</div>
+                                    {course.course_code && (
+                                      <div className="text-xs text-accent2">{course.course_code}</div>
+                                    )}
+                                  </a>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="px-3 py-2 text-sm text-text/60">
+                                No courses yet
+                              </div>
+                            )}
+
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className="ml-4 text-[25px] hover:text-accent4 transition-colors duration-200 cursor-pointer"
+                    >
+                      {item.name}
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
