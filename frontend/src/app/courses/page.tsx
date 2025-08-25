@@ -63,6 +63,24 @@ export default function CoursePage() {
     }
   };
 
+  // Filter tasks based on active tab
+  const getFilteredTasks = () => {
+    if (activeTab === 'active') {
+      return tasks.filter((task: any) => !task.completed);
+    } else if (activeTab === 'completed') {
+      return tasks.filter((task: any) => task.completed);
+    }
+    // 'all' tab - sort completed tasks to bottom
+    return [...tasks].sort((a: any, b: any) => {
+      if (a.completed === b.completed) {
+        // If both have same completion status, sort by due date
+        return new Date(a.due_date || 0).getTime() - new Date(b.due_date || 0).getTime();
+      }
+      // Put completed tasks at the bottom
+      return a.completed ? 1 : -1;
+    });
+  };
+
   const handleEditCourse = async (courseData: any) => {
     setIsLoading(true);
     try {
@@ -205,6 +223,20 @@ export default function CoursePage() {
     setEditingTask(null);
   };
 
+  const handleToggleTaskCompletion = async (taskId: string, currentCompleted: boolean) => {
+    setIsLoading(true);
+    try {
+      await updateTask(taskId, { completed: !currentCompleted });
+      // Refresh tasks after updating
+      await fetchTasks();
+    } catch (error) {
+      console.error("Error updating task completion:", error);
+      alert("Failed to update task completion. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
   if (!course) return <p>Course not found</p>;
@@ -226,14 +258,14 @@ export default function CoursePage() {
             <button 
               onClick={handleOpenEditModal}
               disabled={isLoading}
-              className="px-4 py-2 bg-box2 text-text rounded-lg hover:bg-accent1/20 transition-colors border border-accent1/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-box2 text-text rounded-lg hover:bg-accent1/20 transition-colors border border-accent1/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Edit
             </button>
             <button 
               onClick={handleRemoveCourse}
               disabled={isLoading}
-              className="px-4 py-2 bg-accent2 text-white rounded-lg hover:bg-accent2/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-accent2 text-white rounded-lg hover:bg-accent2/80 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               Remove
             </button>
@@ -246,7 +278,7 @@ export default function CoursePage() {
             <h2 className="text-text text-2xl font-semibold">Task List</h2>
             <button 
               onClick={handleOpenTaskModal}
-              className="px-6 py-3 bg-accent3 text-white rounded-lg hover:bg-accent3/80 transition-colors shadow-md"
+              className="px-6 py-3 bg-accent3 text-white rounded-lg hover:bg-accent3/80 transition-colors shadow-md cursor-pointer"
             >
               + Add Task
             </button>
@@ -275,20 +307,36 @@ export default function CoursePage() {
 
                     {/* Task Cards */}
           <div className="space-y-4">
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
-                <div key={task.id} className="bg-box1 rounded-xl shadow-md p-6 flex items-center space-x-4">
-                  <div className="w-5 h-5 border-2 border-accent3 rounded flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <h3 className="text-text font-medium text-lg">{task.title}</h3>
-                                         <p className="text-text/60 text-sm">
+            {getFilteredTasks().length > 0 ? (
+              getFilteredTasks().map((task) => (
+                                 <div key={task.id} className={`bg-box1 rounded-xl shadow-md p-6 flex items-center space-x-4 transition-all duration-200 ${task.completed ? 'opacity-75' : ''}`}>
+                   <button
+                     onClick={() => handleToggleTaskCompletion(task.id, task.completed)}
+                     disabled={isLoading}
+                     className={`w-5 h-5 border-2 rounded flex-shrink-0 transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed ${
+                       task.completed 
+                         ? 'bg-accent3 border-accent3 text-white' 
+                         : 'border-accent3 hover:bg-accent3/20'
+                     }`}
+                   >
+                     {task.completed && (
+                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                       </svg>
+                     )}
+                   </button>
+                   <div className="flex-1">
+                     <h3 className={`text-text font-medium text-lg transition-all duration-200 ${task.completed ? 'line-through text-text/60' : ''}`}>
+                       {task.title}
+                     </h3>
+                     <p className={`text-text/60 text-sm transition-all duration-200 ${task.completed ? 'line-through' : ''}`}>
                        Due: {task.due_date ? new Date(task.due_date).toLocaleDateString('en-US', { 
                          month: 'short', 
                          day: 'numeric', 
                          year: 'numeric' 
                        }) : 'No due date'}
                      </p>
-                  </div>
+                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="px-3 py-1 bg-accent1/20 text-accent4 rounded-full text-sm font-medium border border-accent1/30">
                       {task.tag}
@@ -314,17 +362,25 @@ export default function CoursePage() {
                   </div>
                 </div>
               ))
-            ) : (
-              <div className="bg-box1 rounded-xl shadow-md p-12 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-accent3/20 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-accent3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <h3 className="text-text text-xl font-medium mb-2">No tasks yet</h3>
-                <p className="text-text/60 mb-6">Click + Add Task to get started.</p>
-              </div>
-            )}
+                         ) : (
+               <div className="bg-box1 rounded-xl shadow-md p-12 flex flex-col items-center justify-center text-center">
+                 <div className="w-16 h-16 bg-accent3/20 rounded-full flex items-center justify-center mb-4">
+                   <svg className="w-8 h-8 text-accent3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                   </svg>
+                 </div>
+                 <h3 className="text-text text-xl font-medium mb-2">
+                   {activeTab === 'active' ? 'No active tasks' : 
+                    activeTab === 'completed' ? 'No completed tasks' : 
+                    'No tasks yet'}
+                 </h3>
+                 <p className="text-text/60 mb-6">
+                   {activeTab === 'active' ? 'All tasks are completed!' : 
+                    activeTab === 'completed' ? 'Complete some tasks to see them here.' : 
+                    'Click + Add Task to get started.'}
+                 </p>
+               </div>
+             )}
           </div>
         </section>
       </div>

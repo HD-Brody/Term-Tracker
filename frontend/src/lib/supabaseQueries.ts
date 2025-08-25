@@ -76,7 +76,7 @@ export async function getTasks() {
   return data;
 }
 
-export async function updateTask(id: string, updates: { title?: string; tag?: string; due_date?: string; status?: string }) {
+export async function updateTask(id: string, updates: { title?: string; tag?: string; due_date?: string; status?: string; completed?: boolean }) {
   const { data, error } = await supabase
     .from("tasks")
     .update(updates)
