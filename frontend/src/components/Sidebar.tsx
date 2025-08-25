@@ -18,6 +18,24 @@ export default function Sidebar({
   const [showCoursesDropdown, setShowCoursesDropdown] = useState(false);
   const [courses, setCourses] = useState<any[]>([]);
 
+  // Handle clicks outside the courses dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showCoursesDropdown) {
+        const target = event.target as Element;
+        const coursesContainer = document.querySelector('[data-courses-container]');
+        if (coursesContainer && !coursesContainer.contains(target)) {
+          setShowCoursesDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCoursesDropdown]);
+
   const navigationItems = [
     { name: "Dashboard", href: "/" },
     { name: "Courses", href: "/courses" },
@@ -97,6 +115,7 @@ export default function Sidebar({
                     <div
                       className="ml-4 text-[25px] cursor-pointer hover:text-accent4 transition-colors duration-200 relative"
                       onClick={toggleCoursesDropdown}
+                      data-courses-container
                     >
                       {item.name}
                       {/* Dropdown arrow */}
