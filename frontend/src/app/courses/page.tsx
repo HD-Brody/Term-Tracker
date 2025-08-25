@@ -2,7 +2,7 @@
 import { useAuth } from "@/lib/authProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { updateCourse, deleteCourse, addTask, getTasks } from "../../lib/supabaseQueries";
+import { updateCourse, deleteCourse, addTask, getTasks, deleteTask } from "../../lib/supabaseQueries";
 import Layout from "../../components/Layout";
 import AddCourseModal from "../../components/AddCourseModal";
 import AddTaskModal from "../../components/AddTaskModal";
@@ -154,6 +154,22 @@ export default function CoursePage() {
     setIsTaskModalOpen(false);
   };
 
+  const handleRemoveTask = async (taskId: string) => {
+    if (window.confirm("Are you sure you want to remove this task?")) {
+      setIsLoading(true);
+      try {
+        await deleteTask(taskId);
+        // Refresh tasks after deletion
+        await fetchTasks();
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        alert("Failed to delete task. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
   if (!course) return <p>Course not found</p>;
@@ -230,9 +246,13 @@ export default function CoursePage() {
                   <div className="w-5 h-5 border-2 border-accent3 rounded flex-shrink-0"></div>
                   <div className="flex-1">
                     <h3 className="text-text font-medium text-lg">{task.title}</h3>
-                    <p className="text-text/60 text-sm">
-                      Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}
-                    </p>
+                                         <p className="text-text/60 text-sm">
+                       Due: {task.due_date ? new Date(task.due_date).toLocaleDateString('en-US', { 
+                         month: 'short', 
+                         day: 'numeric', 
+                         year: 'numeric' 
+                       }) : 'No due date'}
+                     </p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="px-3 py-1 bg-accent1/20 text-accent4 rounded-full text-sm font-medium border border-accent1/30">
@@ -243,11 +263,15 @@ export default function CoursePage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
-                    <button className="p-2 text-accent2 hover:bg-accent2/10 rounded-lg transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                                         <button 
+                       onClick={() => handleRemoveTask(task.id)}
+                       disabled={isLoading}
+                       className="p-2 text-accent2 hover:bg-accent2/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                       </svg>
+                     </button>
                   </div>
                 </div>
               ))
