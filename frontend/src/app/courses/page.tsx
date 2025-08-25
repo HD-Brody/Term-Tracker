@@ -2,7 +2,9 @@
 import { useAuth } from "@/lib/authProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { updateCourse, deleteCourse } from "../../lib/supabaseQueries";
 import Layout from "../../components/Layout";
+import AddCourseModal from "../../components/AddCourseModal";
 
 export default function CoursePage() {
   const { user, loading } = useAuth();
@@ -10,8 +12,14 @@ export default function CoursePage() {
   const searchParams = useSearchParams();
   const courseId = searchParams.get('id');
   const courseName = searchParams.get('name');
+  const courseCode = searchParams.get('code');
+  const courseProf = searchParams.get('professor');
+  const courseSemester = searchParams.get('semester');
   const [course, setCourse] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -23,10 +31,76 @@ export default function CoursePage() {
     if (courseId && courseName) {
       setCourse({
         id: courseId,
-        name: courseName
+        name: courseName,
+        code: courseCode || '',
+        professor: courseProf || '',
+        semester: courseSemester || ''
       });
     }
-  }, [courseId, courseName]);
+  }, [courseId, courseName, courseCode, courseProf, courseSemester]);
+
+  const handleEditCourse = async (courseData: any) => {
+    setIsLoading(true);
+    try {
+      const updatedCourse = await updateCourse(courseData.id, {
+        name: courseData.courseName,
+        course_code: courseData.courseCode,
+        professor: courseData.professor,
+        semester: courseData.semester,
+        notes: courseData.notes,
+      });
+      
+      if (updatedCourse && updatedCourse[0]) {
+        // Update the local course state
+        setCourse({
+          id: updatedCourse[0].id,
+          name: updatedCourse[0].name,
+          code: updatedCourse[0].course_code || '',
+          professor: updatedCourse[0].professor || '',
+          semester: updatedCourse[0].semester || ''
+        });
+        handleCloseModal();
+      }
+    } catch (error) {
+      console.error("Error updating course:", error);
+      alert("Failed to update course. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveCourse = async () => {
+    if (window.confirm("Are you sure you want to remove this course?")) {
+      setIsLoading(true);
+      try {
+        await deleteCourse(courseId!);
+        // Redirect to dashboard after successful deletion
+        router.push("/");
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        alert("Failed to delete course. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleOpenEditModal = () => {
+    setEditingCourse({
+      id: course.id,
+      name: course.name,
+      course_code: course.code,
+      professor: course.professor,
+      semester: course.semester,
+      notes: course.notes || ''
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCourse(null);
+  };
 
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
@@ -39,17 +113,25 @@ export default function CoursePage() {
         <header className="flex justify-between items-start">
           <div className="flex-1">
             <h1 className="text-text text-3xl lg:text-4xl font-bold mb-2">
-              CSC110 – Intro to Computer Science
+              {course.code ? `${course.code} - ` : ''}{course.name}
             </h1>
             <p className="text-text/70 text-lg">
-              Professor: Sadia Sharmin | Fall 2025
+              {course.professor && `Professor: ${course.professor}`}{course.professor && course.semester && ' | '}{course.semester}
             </p>
           </div>
           <div className="flex space-x-3">
-            <button className="px-4 py-2 bg-box2 text-text rounded-lg hover:bg-accent1/20 transition-colors border border-accent1/30">
+            <button 
+              onClick={handleOpenEditModal}
+              disabled={isLoading}
+              className="px-4 py-2 bg-box2 text-text rounded-lg hover:bg-accent1/20 transition-colors border border-accent1/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Edit
             </button>
-            <button className="px-4 py-2 bg-accent2 text-white rounded-lg hover:bg-accent2/80 transition-colors">
+            <button 
+              onClick={handleRemoveCourse}
+              disabled={isLoading}
+              className="px-4 py-2 bg-accent2 text-white rounded-lg hover:bg-accent2/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Remove
             </button>
           </div>
@@ -174,6 +256,15 @@ export default function CoursePage() {
           </div>
         </section>
       </div>
+
+      {/* Edit Course Modal */}
+      <AddCourseModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleEditCourse}
+        initialData={editingCourse}
+        isLoading={isLoading}
+      />
     </Layout>
   );
 }
