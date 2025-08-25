@@ -2,10 +2,11 @@
 import { useAuth } from "@/lib/authProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { updateCourse, deleteCourse, addTask, getTasks, deleteTask } from "../../lib/supabaseQueries";
+import { updateCourse, deleteCourse, addTask, getTasks, deleteTask, updateTask } from "../../lib/supabaseQueries";
 import Layout from "../../components/Layout";
 import AddCourseModal from "../../components/AddCourseModal";
 import AddTaskModal from "../../components/AddTaskModal";
+import EditTaskModal from "../../components/EditTaskModal";
 
 export default function CoursePage() {
   const { user, loading } = useAuth();
@@ -22,6 +23,8 @@ export default function CoursePage() {
   const [editingCourse, setEditingCourse] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<any | null>(null);
   const [tasks, setTasks] = useState<any[]>([]);
 
   useEffect(() => {
@@ -170,6 +173,38 @@ export default function CoursePage() {
     }
   };
 
+  const handleEditTask = async (taskData: any) => {
+    setIsLoading(true);
+    try {
+      const updatedTask = await updateTask(taskData.id, {
+        title: taskData.title,
+        tag: taskData.tag,
+        due_date: taskData.dueDate,
+      });
+      
+      if (updatedTask) {
+        // Refresh tasks after updating
+        await fetchTasks();
+        handleCloseEditTaskModal();
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("Failed to update task. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenEditTaskModal = (task: any) => {
+    setEditingTask(task);
+    setIsEditTaskModalOpen(true);
+  };
+
+  const handleCloseEditTaskModal = () => {
+    setIsEditTaskModalOpen(false);
+    setEditingTask(null);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
   if (!course) return <p>Course not found</p>;
@@ -258,11 +293,15 @@ export default function CoursePage() {
                     <span className="px-3 py-1 bg-accent1/20 text-accent4 rounded-full text-sm font-medium border border-accent1/30">
                       {task.tag}
                     </span>
-                    <button className="p-2 text-text/60 hover:text-text hover:bg-box2 rounded-lg transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
+                                         <button 
+                       onClick={() => handleOpenEditTaskModal(task)}
+                       disabled={isLoading}
+                       className="p-2 text-text/60 hover:text-text hover:bg-box2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                       </svg>
+                     </button>
                                          <button 
                        onClick={() => handleRemoveTask(task.id)}
                        disabled={isLoading}
@@ -304,6 +343,15 @@ export default function CoursePage() {
         isOpen={isTaskModalOpen}
         onClose={handleCloseTaskModal}
         onSave={handleAddTask}
+        isLoading={isLoading}
+      />
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isOpen={isEditTaskModalOpen}
+        onClose={handleCloseEditTaskModal}
+        onSave={handleEditTask}
+        initialData={editingTask}
         isLoading={isLoading}
       />
     </Layout>
