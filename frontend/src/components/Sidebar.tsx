@@ -113,7 +113,9 @@ export default function Sidebar({
                 <div key={item.name} className="mb-6 w-full relative">
                   {item.name === "Courses" ? (
                     <div
-                      className="ml-4 text-[25px] cursor-pointer hover:text-accent4 transition-colors duration-200 relative"
+                      className={`ml-4 text-[25px] cursor-pointer hover:text-accent4 transition-colors duration-200 relative ${
+                        activePage === "Courses" ? "font-bold" : ""
+                      }`}
                       onClick={toggleCoursesDropdown}
                       data-courses-container
                     >
@@ -165,7 +167,9 @@ export default function Sidebar({
                   ) : (
                     <a
                       href={item.href}
-                      className="ml-4 text-[25px] hover:text-accent4 transition-colors duration-200 cursor-pointer"
+                      className={`ml-4 text-[25px] hover:text-accent4 transition-colors duration-200 cursor-pointer ${
+                        activePage === item.name ? "font-bold" : ""
+                      }`}
                     >
                       {item.name}
                     </a>
