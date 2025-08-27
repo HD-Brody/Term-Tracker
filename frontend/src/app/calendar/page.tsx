@@ -5,8 +5,41 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
+import { useRef, useEffect } from 'react'
 
 export default function CalendarPage() {
+  const calendarRef = useRef<any>(null);
+
+  // Force calendar to update when container size changes
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (calendarRef.current) {
+        // Force calendar to recalculate dimensions
+        const calendarApi = calendarRef.current.getApi();
+        if (calendarApi) {
+          calendarApi.updateSize();
+          calendarApi.render();
+        }
+      }
+    });
+
+    // Observe the calendar container
+    const calendarContainer = document.querySelector('.fc');
+    if (calendarContainer) {
+      resizeObserver.observe(calendarContainer);
+    }
+
+    // Also observe the main content area for sidebar changes
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      resizeObserver.observe(mainContent);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
     <Layout activePage="Calendar">
       <div className="w-full flex flex-col space-y-8">
@@ -26,6 +59,7 @@ export default function CalendarPage() {
         <section className="space-y-6">
           <div className="bg-box1 rounded-xl shadow-md p-6">
             <FullCalendar
+              ref={calendarRef}
               plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
               initialView="dayGridMonth"
               headerToolbar={{
