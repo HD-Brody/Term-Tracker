@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabaseClient";
 import { addCourse, getCourses, updateCourse, deleteCourse, getTasks, updateTask, deleteTask } from "../lib/supabaseQueries";
 import Layout from "../components/Layout";
 import AddCourseModal from "../components/AddCourseModal";
+import CalendarWidget from "../components/CalendarWidget";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -412,11 +413,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Calendar */}
-          <section className="bg-box1 rounded-xl shadow-lg p-6 flex-1">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-text">Calendar</h2>
-            </div>
-          </section>
+          <CalendarWidget />
         </div>
 
         {/* Logout Button - Fixed Position Bottom Right */}
