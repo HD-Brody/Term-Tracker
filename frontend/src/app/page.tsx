@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
   // Fetch courses from Supabase
   const fetchCourses = async () => {
@@ -102,6 +103,8 @@ export default function DashboardPage() {
       if (newCourse && newCourse[0]) {
         setCourses([...courses, newCourse[0]]);
         handleCloseModal();
+        // Refresh calendar since courses affect task display
+        setCalendarRefreshKey(prev => prev + 1);
       }
     } catch (error) {
       console.error("Error adding course:", error);
@@ -128,6 +131,8 @@ export default function DashboardPage() {
         );
         setCourses(updatedCourses);
         handleCloseModal();
+        // Refresh calendar since courses affect task display
+        setCalendarRefreshKey(prev => prev + 1);
       }
     } catch (error) {
       console.error("Error updating course:", error);
@@ -142,6 +147,8 @@ export default function DashboardPage() {
     try {
       await deleteCourse(courseId);
       setCourses(courses.filter((course) => course.id !== courseId));
+      // Refresh calendar since courses affect task display
+      setCalendarRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Error deleting course:", error);
       alert("Failed to delete course. Please try again.");
@@ -167,6 +174,8 @@ export default function DashboardPage() {
       await updateTask(taskId, { completed: !currentCompleted });
       // Refresh tasks after updating
       await fetchTasks();
+      // Refresh calendar
+      setCalendarRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Error updating task completion:", error);
       alert("Failed to update task completion. Please try again.");
@@ -189,6 +198,8 @@ export default function DashboardPage() {
         await deleteTask(taskId);
         // Refresh tasks after deletion
         await fetchTasks();
+        // Refresh calendar
+        setCalendarRefreshKey(prev => prev + 1);
       } catch (error) {
         console.error("Error deleting task:", error);
         alert("Failed to delete task. Please try again.");
@@ -413,7 +424,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Calendar */}
-          <CalendarWidget />
+          <CalendarWidget refreshKey={calendarRefreshKey} />
         </div>
 
         {/* Logout Button - Fixed Position Bottom Right */}

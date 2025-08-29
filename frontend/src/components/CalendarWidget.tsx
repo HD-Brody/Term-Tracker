@@ -24,32 +24,44 @@ interface Course {
   semester?: string;
 }
 
-export default function CalendarWidget() {
+interface CalendarWidgetProps {
+  refreshKey?: number;
+}
+
+export default function CalendarWidget({ refreshKey }: CalendarWidgetProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // Fetch tasks and courses
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [tasksData, coursesData] = await Promise.all([
-          getTasks(),
-          getCourses()
-        ]);
-        setTasks(tasksData || []);
-        setCourses(coursesData || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [tasksData, coursesData] = await Promise.all([
+        getTasks(),
+        getCourses()
+      ]);
+      setTasks(tasksData || []);
+      setCourses(coursesData || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Initial data fetch
+  useEffect(() => {
     fetchData();
   }, []);
+
+  // Refresh data when refreshKey changes
+  useEffect(() => {
+    if (refreshKey && refreshKey > 0) {
+      fetchData();
+    }
+  }, [refreshKey]);
 
   // Convert tasks to calendar events
   const calendarEvents = useMemo(() => {
